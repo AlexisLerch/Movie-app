@@ -42,7 +42,7 @@ const MovieCard = ({ id, poster_path, title, vote_average, release_date}: Movie)
                   {(vote_average / 2).toFixed(1)} / 5
                 </Text>
               </View>
-              <TouchableOpacity onPress={handleSave} className='mt-2 top-[-26%] left-[85%] absolute'>
+              <TouchableOpacity onPress={handleSave} className='mt-2 top-[78%] left-[85%] absolute'>
                 {/* <Text className='text-xs text-blue-400'>+ Guardar</Text> */}
                 <Image source={icons.save} className='absolute size-5 bg-black rounded-full'/> 
                </TouchableOpacity>
