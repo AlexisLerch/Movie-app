@@ -1,9 +1,10 @@
-import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native'
+import { View, Text, ScrollView, Image, TouchableOpacity, Alert } from 'react-native'
 import React from 'react'
 import { router, useLocalSearchParams } from 'expo-router'
 import useFetch from '@/services/useFetch'
 import { fetchMovieDetails } from '@/services/api'
 import { icons } from '@/constants/icons'
+import { saveMovie } from '@/services/appwrite'
 
 interface MovieInfoProps {
   label: string;
@@ -25,6 +26,26 @@ const MovieDetails = () => {
   const { id } = useLocalSearchParams()
 
   const {data: movie, loading} = useFetch(() => fetchMovieDetails(id as string))
+
+  const handleSave = async () => {
+    try {
+      if (!movie?.poster_path) {
+        Alert.alert('Error', 'No poster available for this movie');
+        return;
+      }
+  
+      await saveMovie({
+        id: movie?.id,
+        title: movie?.title,
+        poster_path: `https://image.tmdb.org/t/p/w500${movie?.poster_path}`,  // Asegurándote de que se pase la URL completa
+      });
+  
+      Alert.alert('Película guardada');
+    } catch (err: any) {
+      Alert.alert('Error al guardar', err.message);
+    }
+  };
+
 
   return (
     <View className='bg-primary flex-1'>
@@ -56,6 +77,11 @@ const MovieDetails = () => {
               ({movie?.vote_count} votes)
             </Text>
           </View>
+
+          <TouchableOpacity className='absolute top-5 left-[85%]' onPress={handleSave} >
+            <Image source={icons.save} className='absolute size-10 bg-black rounded-full'/> 
+            {/* <Text className='text-white text-center font-semibold'>Guardar para después</Text> */}
+          </TouchableOpacity>
 
           <MovieInfo label='Overview' value={movie?.overview} />
           <MovieInfo label='Genres' value={movie?.genres.map((g) => g.name).join(" - ") || 'N/A'} />

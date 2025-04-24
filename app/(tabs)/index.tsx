@@ -8,10 +8,26 @@ import { fetchMovies } from "@/services/api";
 import MovieCard from "@/components/MovieCard";
 import { getTrendingMovies } from "@/services/appwrite";
 import TrendingCard from "@/components/TrendingCard";
+import { useEffect } from 'react';
+import { getCurrentUser } from '@/services/appwrite';
+
 
 export default function Index() {
 
   const router = useRouter();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        await getCurrentUser();
+        router.replace('/(tabs)');
+      } catch {
+        router.replace('/login');
+      }
+    };
+
+    checkSession();
+  }, []);
 
   const {
     data: trendingMovies,
