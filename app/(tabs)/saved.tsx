@@ -53,7 +53,7 @@ const Saved = () => {
           </View>
         )}
       />
-      <Text className='mt-5 mb-5'></Text>
+      <Text className='mt-[10%] mb-[10%]'></Text>
     </View>
   );
 };
