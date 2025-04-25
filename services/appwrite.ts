@@ -139,3 +139,24 @@ export const getCurrentUser = async () => {
   return await account.get();
 };
 
+export const removeMovie = async (movieId: number | string) => {
+  const user = await account.get();
+
+  // Buscar documento correspondiente al usuario y película
+  const res = await database.listDocuments(
+    process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+    process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID!,
+    [
+      Query.equal('user_id', user.$id),
+      Query.equal('movie_id', movieId),
+    ]
+  );
+
+  if (res.documents.length > 0) {
+    await database.deleteDocument(
+      process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+      process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID!,
+      res.documents[0].$id
+    );
+  }
+};

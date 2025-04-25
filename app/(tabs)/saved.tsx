@@ -39,15 +39,15 @@ const Saved = () => {
         data={movies}
         numColumns={3}
         keyExtractor={(item) => item.$id}
-        columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 20 }}
+        columnWrapperStyle={{ justifyContent: 'flex-start',  marginBottom: 10}}
         renderItem={({ item }) => (
-          <View className='w-[30%] mb-5 mt-1'>
+          <View className='w-[30%] mb-5 mt-1 ml-2'>
             <Image
               source={{ uri: `https://image.tmdb.org/t/p/w500${item.poster_path}` }}
               className='w-full h-48 rounded-lg'
               resizeMode='cover'
             />
-            <Text className='text-white text-1xs mt-1 ' numberOfLines={2}>
+            <Text className='text-white text-1xs mt-2 ' numberOfLines={2}>
               {item.title}
             </Text>
           </View>

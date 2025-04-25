@@ -1,10 +1,13 @@
 import { View, Text, ScrollView, Image, TouchableOpacity, Alert } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { router, useLocalSearchParams } from 'expo-router'
 import useFetch from '@/services/useFetch'
 import { fetchMovieDetails } from '@/services/api'
 import { icons } from '@/constants/icons'
-import { saveMovie } from '@/services/appwrite'
+import { account, database, removeMovie, saveMovie } from '@/services/appwrite'
+import { Query } from 'react-native-appwrite'
+
+
 
 interface MovieInfoProps {
   label: string;
@@ -27,22 +30,53 @@ const MovieDetails = () => {
 
   const {data: movie, loading} = useFetch(() => fetchMovieDetails(id as string))
 
-  const handleSave = async () => {
+  const [isSaved, setIsSaved] = useState(false);
+
+  useEffect(() => {
+    const checkIfSaved = async () => {
+      try {
+        if (!movie?.id) return;
+  
+        const user = await account.get();
+        const res = await database.listDocuments(
+          process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+          process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID!,
+          [
+            Query.equal('user_id', user.$id),
+            Query.equal('movie_id', movie.id)
+          ]
+        );
+        setIsSaved(res.documents.length > 0);
+      } catch (err) {
+        console.error("Error comprobando si está guardada:", err);
+      }
+    };
+  
+    checkIfSaved();
+  }, [movie]);
+
+  const handleToggleSave = async () => {
     try {
       if (!movie?.poster_path) {
-        Alert.alert('Error', 'No poster available for this movie');
+        Alert.alert('Error', 'No poster disponible');
         return;
       }
   
-      await saveMovie({
-        id: movie?.id,
-        title: movie?.title,
-        poster_path: `https://image.tmdb.org/t/p/w500${movie?.poster_path}`,  // Asegurándote de que se pase la URL completa
-      });
-  
-      Alert.alert('Película guardada');
+      if (isSaved) {
+        await removeMovie(movie.id);
+        setIsSaved(false);
+        Alert.alert('Película quitada de la Watchlist');
+      } else {
+        await saveMovie({
+          id: movie.id,
+          title: movie.title,
+          poster_path: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
+        });
+        setIsSaved(true);
+        Alert.alert('Película guardada');
+      }
     } catch (err: any) {
-      Alert.alert('Error al guardar', err.message);
+      Alert.alert('Error', err.message);
     }
   };
 
@@ -78,8 +112,8 @@ const MovieDetails = () => {
             </Text>
           </View>
 
-          <TouchableOpacity className='absolute top-5 left-[85%]' onPress={handleSave} >
-            <Image source={icons.save} className='absolute size-10 bg-black rounded-full'/> 
+          <TouchableOpacity className='absolute top-5 left-[85%]' onPress={handleToggleSave} >
+            <Image source={ isSaved ? icons.saved : icons.save1} className='absolute size-10 bg-black rounded-full'/> 
             {/* <Text className='text-white text-center font-semibold'>Guardar para después</Text> */}
           </TouchableOpacity>
 
