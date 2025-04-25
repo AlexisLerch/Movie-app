@@ -5,8 +5,8 @@ const DATABASE_ID = process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!;
 const COLLECTION_ID = process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID!;
 
 const client = new Client()
-  .setEndpoint("https://cloud.appwrite.io/v1")
-  .setProject(process.env.EXPO_PUBLIC_APPWRITE_POJECT_ID!);
+  .setEndpoint(process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1')
+  .setProject(process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID || '');
 
 const database = new Databases(client);
 const account = new Account(client);
@@ -127,6 +127,7 @@ export const register = async (email: string, password: string, name: string) =>
 };
 
 export const login = async (email: string, password: string) => {
+  
   await account.createEmailPasswordSession(email, password);
   return await account.get();
 };
@@ -158,5 +159,19 @@ export const removeMovie = async (movieId: number | string) => {
       process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID!,
       res.documents[0].$id
     );
+  }
+};
+
+export const getSavedMoviesCount = async (userId: string) => {
+  try {
+    const res = await database.listDocuments(
+      process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+      process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID!,
+      [Query.equal('user_id', userId)] // Filtramos por el user_id
+    );
+    return res.documents.length; // Devuelve el número de documentos
+  } catch (error) {
+    console.error('Error al obtener películas guardadas:', error);
+    return 0;
   }
 };
