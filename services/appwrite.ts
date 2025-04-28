@@ -1,8 +1,10 @@
 import { Client, Databases, Account, ID, Query } from "react-native-appwrite";
 import { checkSession } from "./auth";
+import search from "@/app/(tabs)/search";
 
 const DATABASE_ID = process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!;
 const COLLECTION_ID = process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID!;
+// const FAVORITE_ID = process.env.EXPO_PUBLIC_APPWRITE_FAVORITE_COLLECTION_ID!;
 
 const client = new Client()
   .setEndpoint(process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1')
@@ -71,8 +73,6 @@ export const saveMovie = async (movie: {
   try {
     await checkSession();
     const user = await account.get();
-
-    
 
     // Verificar si se pasa 'searchTerm', si no, tomar el título como 'searchTerm'
     const searchTerm = movie.searchTerm || movie.title.toLowerCase();
@@ -174,4 +174,95 @@ export const getSavedMoviesCount = async (userId: string) => {
     console.error('Error al obtener películas guardadas:', error);
     return 0;
   }
+};
+
+// export const saveFavorite = async (movie: { id: number; title: string; poster_path: string; }) => {
+//   const user = await account.get();
+  
+//   await database.createDocument(
+//     process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+//     process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID!,
+//     ID.unique(),
+//     {
+//       movie_id: movie.id,
+//       title: movie.title,
+//       poster_path: movie.poster_path,
+//       searchTerm: movie.title.toLowerCase(),
+//       user_id: user.$id,
+//       isFavorite: true
+//     }
+//   );
+// };
+
+// export const getFavoriteMovies = async () => {
+//   const user = await account.get();
+//   const res = await database.listDocuments(
+//     process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+//     process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID!,
+//     [
+//       Query.equal('user_id', user.$id),
+//       Query.equal('isFavorite', true),
+//       Query.equal('searchTerm', user.$id), // Asegúrate de que este sea el campo correcto para marcar favoritas
+//     ]
+//   );
+//   return res.documents;
+// };
+
+export const saveFavorite = async (movie: {
+  id: number;
+  title: string;
+  poster_path: string;
+}) => {
+  const user = await account.get();
+  return await database.createDocument(
+    process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!, // <-- Usa la DATABASE_ID
+    process.env.EXPO_PUBLIC_APPWRITE_FAVORITE_COLLECTION_ID!, // <-- NUEVO: Favoritos COLLECTION_ID
+    ID.unique(),
+    {
+      user_id: user.$id,
+      movie_id: movie.id,
+      title: movie.title,
+      poster_path: movie.poster_path,
+      searchTerm: movie.title.toLowerCase(),
+    }
+  );
+};
+
+// Borra una película de favoritos
+export const removeFavorite = async (movieId: number) => {
+  const user = await account.get();
+  const res = await database.listDocuments(
+    process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+    process.env.EXPO_PUBLIC_APPWRITE_FAVORITE_COLLECTION_ID!,
+    [
+      Query.equal('user_id', user.$id),
+      Query.equal('movie_id', movieId),
+    ]
+  );
+
+  if (res.documents.length === 0) {
+    throw new Error('Película no encontrada en favoritos.');
+  }
+
+  const documentId = res.documents[0].$id;
+
+  return await database.deleteDocument(
+    process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+    process.env.EXPO_PUBLIC_APPWRITE_FAVORITE_COLLECTION_ID!,
+    documentId
+  );
+};
+
+// Lista todas las películas favoritas del usuario
+export const getFavorites = async () => {
+  const user = await account.get();
+  const res = await database.listDocuments(
+    process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+    process.env.EXPO_PUBLIC_APPWRITE_FAVORITE_COLLECTION_ID!,
+    [
+      Query.equal('user_id', user.$id),
+    ]
+  );
+
+  return res.documents;
 };

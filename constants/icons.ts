@@ -20,5 +20,6 @@ export const icons = {
   play,
   arrow,
   saved,
-  save1
+  save1,
+
 };

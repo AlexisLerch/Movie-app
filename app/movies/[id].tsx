@@ -5,7 +5,8 @@ import useFetch from '@/services/useFetch'
 import { fetchMovieDetails } from '@/services/api'
 import { icons } from '@/constants/icons'
 import { account, database, removeMovie, saveMovie } from '@/services/appwrite'
-import { Query } from 'react-native-appwrite'
+import { ID, Query } from 'react-native-appwrite'
+import search from '../(tabs)/search'
 
 
 
@@ -32,6 +33,9 @@ const MovieDetails = () => {
 
   const [isSaved, setIsSaved] = useState(false);
 
+  const [isFavorite, setIsFavorite] = useState(false);
+
+
   useEffect(() => {
     const checkIfSaved = async () => {
       try {
@@ -43,15 +47,22 @@ const MovieDetails = () => {
           process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID!,
           [
             Query.equal('user_id', user.$id),
-            Query.equal('movie_id', movie.id)
+            Query.equal('movie_id', movie.id),
           ]
         );
-        setIsSaved(res.documents.length > 0);
+  
+        if (res.documents.length > 0) {
+          setIsSaved(true);
+          setIsFavorite(res.documents[0].isFavorite || false); // <--- Agregado
+        } else {
+          setIsSaved(false);
+          setIsFavorite(false);
+        }
       } catch (err) {
         console.error("Error comprobando si está guardada:", err);
       }
     };
-  
+
     checkIfSaved();
   }, [movie]);
 
@@ -80,6 +91,59 @@ const MovieDetails = () => {
     }
   };
 
+  const handleToggleFavorite = async () => {
+    try {
+      if (!movie?.poster_path) {
+        Alert.alert('Error', 'No poster disponible');
+        return;
+      }
+  
+      const user = await account.get();
+  
+      const res = await database.listDocuments(
+        process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+        process.env.EXPO_PUBLIC_APPWRITE_FAVORITE_COLLECTION_ID!, // 🔥 Ojo, ahora usamos otra colección
+        [
+          Query.equal('user_id', user.$id),
+          Query.equal('movie_id', movie.id),
+        ]
+      );
+  
+      if (res.documents.length > 0) {
+        const document = res.documents[0];
+  
+        await database.deleteDocument(
+          process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+          process.env.EXPO_PUBLIC_APPWRITE_FAVORITE_COLLECTION_ID!,
+          document.$id
+        );
+  
+        setIsFavorite(false);
+        Alert.alert('Película quitada de favoritos');
+  
+      } else {
+        await database.createDocument(
+          process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+          process.env.EXPO_PUBLIC_APPWRITE_FAVORITE_COLLECTION_ID!,
+          ID.unique(),
+          {
+            user_id: user.$id,
+            movie_id: movie.id,
+            title: movie.title,
+            poster_path: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
+            searchTerm: movie.title.toLowerCase(),
+          }
+        );
+  
+        setIsFavorite(true);
+        Alert.alert('Película marcada como favorita');
+      }
+    } catch (err: any) {
+      Alert.alert('Error', err.message);
+    }
+  };
+  
+ 
 
   return (
     <View className='bg-primary flex-1'>
@@ -115,6 +179,13 @@ const MovieDetails = () => {
           <TouchableOpacity className='absolute top-5 left-[85%]' onPress={handleToggleSave} >
             <Image source={ isSaved ? icons.saved : icons.save1} className='absolute size-10 bg-black rounded-full'/> 
             {/* <Text className='text-white text-center font-semibold'>Guardar para después</Text> */}
+          </TouchableOpacity>
+
+          <TouchableOpacity className='absolute top-5 left-[55%]' onPress={handleToggleFavorite}>
+            <Image 
+              source={isFavorite ? icons.star : icons.star} 
+              className='size-10' 
+            />
           </TouchableOpacity>
 
           <MovieInfo label='Overview' value={movie?.overview} />

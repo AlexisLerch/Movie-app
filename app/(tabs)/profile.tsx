@@ -3,18 +3,19 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Account, Client, ID, Query } from 'react-native-appwrite';
 import { icons } from '@/constants/icons';
 import { router, useFocusEffect } from 'expo-router';
-import { database } from '@/services/appwrite';
+import { database, getFavorites, account } from '@/services/appwrite';
 
 // Configuración del cliente de Appwrite
-const client = new Client()
-  .setEndpoint(process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT || '')
-  .setProject(process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID || '');
+// const client = new Client()
+//   .setEndpoint(process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT || '')
+//   .setProject(process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID || '');
 
-const account = new Account(client);
+// const account = new Account(client);
 
 const Profile = () => {
   const [user, setUser] = useState<any>(null);
   const [savedCount, setSavedCount] = useState<number>(0);
+  const [favorites, setFavorites] = useState<any[]>([]);
 
   const fetchUser = async () => {
     try {
@@ -53,6 +54,31 @@ const Profile = () => {
     }
   }, [user]);
 
+  
+
+  const fetchFavoriteMovies = async () => {
+    try {
+      const user = await account.get();
+      const res = await database.listDocuments(
+        process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+        process.env.EXPO_PUBLIC_APPWRITE_FAVORITE_COLLECTION_ID!,
+        [
+          Query.equal('user_id', user.$id),
+        ]
+      );
+      
+      setFavorites(res.documents); // Guardamos las películas favoritas
+    } catch (error) {
+      console.error('Error al obtener las películas favoritas:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchFavoriteMovies();
+    }
+  }, [user]);
+
   useFocusEffect(
     useCallback(() => {
       fetchUser(); // Vuelve a cargar los datos al enfocar el perfil
@@ -73,20 +99,33 @@ const Profile = () => {
             {user.name || 'Usuario'}
           </Text>
           <Text className="text-light-300 text-sm mb-4">{user.email}</Text>
+
+          <View className='flex-row justify-between'>
+          {favorites.slice(0, 4).map((movie) => (
+            <View className='w-1/4 m-1' key={movie.$id}>
+              <Image
+                source={{ uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }}
+                className='w-full h-36 rounded-lg mb-2'
+                resizeMode='cover'
+              />
+              <Text className='text-white text-sm text-center'>{movie.title}</Text>
+            </View>
+          ))}
+        </View>
   
           {/* Stats estilo Letterboxd */}
-          <View className="flex-row justify-between w-full px-8 mb-6">
+          <View className="flex-row justify-between w-full px-8 mt-8 mb-4">
             <View className="items-center">
               <Text className="text-white text-lg font-semibold">0</Text>
-              <Text className="text-light-300 text-xs">Vistas</Text>
+              <Text className="text-light-300 text-xl">Vistas</Text>
             </View>
             <View className="items-center">
               <Text className="text-white text-lg font-semibold">{savedCount}</Text>
-              <Text className="text-light-300 text-xs">Guardadas</Text>
+              <Text className="text-light-300 text-xl">Guardadas</Text>
             </View>
             <View className="items-center">
-              <Text className="text-white text-lg font-semibold">5</Text>
-              <Text className="text-light-300 text-xs">Favoritas</Text>
+              <Text className="text-white text-lg font-semibold">4</Text>
+              <Text className="text-light-300 text-xl">Favoritas</Text>
             </View>
           </View>
   
