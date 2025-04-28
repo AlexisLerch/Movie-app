@@ -15,6 +15,7 @@ import { database, getFavorites, account } from '@/services/appwrite';
 const Profile = () => {
   const [user, setUser] = useState<any>(null);
   const [savedCount, setSavedCount] = useState<number>(0);
+  const [favoriteCount, setFavoriteCount] = useState<number>(0);
   const [favorites, setFavorites] = useState<any[]>([]);
 
   const fetchUser = async () => {
@@ -31,6 +32,7 @@ const Profile = () => {
   
       // console.log("Películas guardadas:", res.documents);  // Verifica si las películas se obtienen
       setSavedCount(res.documents.length); // Establecer el número de películas guardadas
+
     } catch (error: any) {
       console.error('Error al obtener usuario o películas guardadas:', error.message);
       Alert.alert('Sesión caducada', 'Por favor inicia sesión nuevamente.');
@@ -66,8 +68,9 @@ const Profile = () => {
           Query.equal('user_id', user.$id),
         ]
       );
-      
+      setFavoriteCount(res.documents.length); // Guardamos el conteo de películas favoritas
       setFavorites(res.documents); // Guardamos las películas favoritas
+      
     } catch (error) {
       console.error('Error al obtener las películas favoritas:', error);
     }
@@ -124,7 +127,7 @@ const Profile = () => {
               <Text className="text-light-300 text-xl">Guardadas</Text>
             </View>
             <View className="items-center">
-              <Text className="text-white text-lg font-semibold">4</Text>
+              <Text className="text-white text-lg font-semibold">{favoriteCount}</Text>
               <Text className="text-light-300 text-xl">Favoritas</Text>
             </View>
           </View>
