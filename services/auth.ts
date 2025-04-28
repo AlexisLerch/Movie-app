@@ -1,9 +1,10 @@
-// import { account } from '@appwrite/appwrite';
+// import { account } from './appwrite'; // Asegúrate de que la ruta sea correcta
+// import { database } from './appwrite'; // Asegúrate de que la ruta sea correcta
 import { Client, Account } from "react-native-appwrite";
 
 const client = new Client()
   .setEndpoint("https://cloud.appwrite.io/v1")
-  .setProject(process.env.EXPO_PUBLIC_APPWRITE_POJECT_ID!);
+  .setProject(process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!);
 
 const account = new Account(client);
 
