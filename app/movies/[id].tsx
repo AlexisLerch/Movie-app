@@ -6,8 +6,7 @@ import { fetchMovieDetails } from '@/services/api'
 import { icons } from '@/constants/icons'
 import { account, database, removeMovie, saveMovie } from '@/services/appwrite'
 import { ID, Query } from 'react-native-appwrite'
-import search from '../(tabs)/search'
-
+import { markAsWatched } from '@/services/appwrite';
 
 
 interface MovieInfoProps {
@@ -35,6 +34,7 @@ const MovieDetails = () => {
 
   const [isFavorite, setIsFavorite] = useState(false);
 
+  const [isWatched, setIsWatched] = useState(false);
 
   useEffect(() => {
     const checkIfSaved = async () => {
@@ -143,7 +143,53 @@ const MovieDetails = () => {
     }
   };
   
- 
+  const handleToggleWatched = async () => {
+    try {
+      if (!movie?.poster_path) {
+        Alert.alert('Error', 'No poster disponible');
+        return;
+      }
+
+      const user = await account.get();
+  
+      const res = await database.listDocuments(
+        process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+        process.env.EXPO_PUBLIC_APPWRITE_WATCHED_COLLECTION_ID!,
+        [
+          Query.equal('user_id', user.$id),
+          Query.equal('movie_id', movie.id),
+        ]
+      );
+  
+      if (res.documents.length > 0) {
+        await database.deleteDocument(
+          process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+          process.env.EXPO_PUBLIC_APPWRITE_WATCHED_COLLECTION_ID!,
+          res.documents[0].$id
+        );
+        setIsWatched(false);
+        Alert.alert('Película desmarcada como vista');
+      } else {
+        await database.createDocument(
+          process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+          process.env.EXPO_PUBLIC_APPWRITE_WATCHED_COLLECTION_ID!,
+          ID.unique(),
+          {
+            user_id: user.$id,
+            movie_id: movie.id,
+            title: movie.title,
+            poster_path: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
+          }
+        );
+        setIsWatched(true);
+        Alert.alert('Película marcada como vista');
+      }
+    } catch (err: any) {
+      console.error("Error al alternar vista:", err.message);
+      Alert.alert('Error', err.message);
+    }
+  };
+  
 
   return (
     <View className='bg-primary flex-1'>
@@ -176,15 +222,24 @@ const MovieDetails = () => {
             </Text>
           </View>
 
-          <TouchableOpacity className='absolute top-5 left-[85%]' onPress={handleToggleSave} >
-            <Image source={ isSaved ? icons.saved : icons.save1} className='absolute size-10 bg-black rounded-full'/> 
-            {/* <Text className='text-white text-center font-semibold'>Guardar para después</Text> */}
+          <TouchableOpacity className='absolute top-5 left-[90%]' onPress={handleToggleSave} >
+            <Image 
+              source={ isSaved ? icons.saved : icons.save1} 
+              className='absolute size-10 bg-black rounded-full'
+            /> 
           </TouchableOpacity>
 
-          <TouchableOpacity className='absolute top-5 left-[55%]' onPress={handleToggleFavorite}>
+          <TouchableOpacity className='absolute top-5 left-[80%]' onPress={handleToggleFavorite}>
             <Image 
               source={isFavorite ? icons.star : icons.star} 
               className='size-10' 
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity className='absolute top-5 left-[70%]' onPress={handleToggleWatched}>
+            <Image 
+              source={isWatched ? icons.arrow : icons.arrow} // Usá dos íconos distintos si querés un cambio visual
+              className='size-10 bg-white rounded-full' 
             />
           </TouchableOpacity>
 

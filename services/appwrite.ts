@@ -266,3 +266,31 @@ export const getFavorites = async () => {
 
   return res.documents;
 };
+
+
+export const markAsWatched = async (movie: { id: number; title: string; poster_path: string }) => {
+  const user = await account.get();
+  return await database.createDocument(
+    process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+    process.env.EXPO_PUBLIC_APPWRITE_WATCHED_COLLECTION_ID!, // Asegúrate de usar la ID correcta
+    ID.unique(),
+    {
+      user_id: user.$id,
+      movie_id: movie.id,
+      title: movie.title,
+      poster_path: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
+      searchTerm: movie.title.toLowerCase(),
+    }
+  );
+};
+
+export const getWatchedMovies = async () => {
+  const user = await account.get();
+  const res = await database.listDocuments(
+    process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+    process.env.EXPO_PUBLIC_APPWRITE_WATCHED_COLLECTION_ID!,
+    [Query.equal('user_id', user.$id)]
+  );
+  return res.documents;
+};
+

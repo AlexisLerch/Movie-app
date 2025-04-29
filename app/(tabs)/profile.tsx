@@ -10,6 +10,7 @@ const Profile = () => {
   const [user, setUser] = useState<any>(null);
   const [savedCount, setSavedCount] = useState<number>(0);
   const [favoriteCount, setFavoriteCount] = useState<number>(0);
+  const [watchedCount, setWatchedCount] = useState<number>(0);
   const [favorites, setFavorites] = useState<any[]>([]);
 
   const fetchUser = async () => {
@@ -80,6 +81,27 @@ const Profile = () => {
       fetchUser(); // Vuelve a cargar los datos al enfocar el perfil
     }, [])
   );
+  useFocusEffect(
+    useCallback(() => {
+      const fetchWatchedCount = async () => {
+        try {
+          const user = await account.get();
+    
+          const res = await database.listDocuments(
+            process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
+            process.env.EXPO_PUBLIC_APPWRITE_WATCHED_COLLECTION_ID!,
+            [Query.equal("user_id", user.$id)]
+          );
+    
+          setWatchedCount(res.documents.length);
+        } catch (error) {
+          console.error("Error al cargar películas vistas:", error);
+        }
+      };
+    
+      fetchWatchedCount();
+    }, [])
+  );
 
   return (
     <View className="flex-1 bg-primary px-6 py-10">
@@ -111,10 +133,10 @@ const Profile = () => {
   
           {/* Stats estilo Letterboxd */}
           <View className="flex-row justify-between w-full px-8 mt-8 mb-4">
-            <View className="items-center">
-              <Text className="text-white text-lg font-semibold">0</Text>
+            <TouchableOpacity className="items-center" onPress={() => router.push('/watched')}>
+              <Text className="text-white text-lg font-semibold">{watchedCount}</Text>
               <Text className="text-light-300 text-xl">Vistas</Text>
-            </View>
+            </TouchableOpacity>
             <TouchableOpacity className="items-center" onPress={() => router.push('/saved')}>
               <Text className="text-white text-lg font-semibold">{savedCount}</Text>
               <Text className="text-light-300 text-xl">Guardadas</Text>
