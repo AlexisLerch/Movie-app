@@ -25,6 +25,12 @@ export default function RootLayout() {
             headerShown: false,
           }}
         />
+          <Stack.Screen
+          name="favorites" // Asegúrate de que el login esté accesible
+          options={{
+            headerShown: false,
+          }}
+        />
       </Stack>
     </>
   );

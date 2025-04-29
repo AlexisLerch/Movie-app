@@ -5,12 +5,6 @@ import { icons } from '@/constants/icons';
 import { router, useFocusEffect } from 'expo-router';
 import { database, getFavorites, account } from '@/services/appwrite';
 
-// Configuración del cliente de Appwrite
-// const client = new Client()
-//   .setEndpoint(process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT || '')
-//   .setProject(process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID || '');
-
-// const account = new Account(client);
 
 const Profile = () => {
   const [user, setUser] = useState<any>(null);
@@ -70,7 +64,6 @@ const Profile = () => {
       );
       setFavoriteCount(res.documents.length); // Guardamos el conteo de películas favoritas
       setFavorites(res.documents); // Guardamos las películas favoritas
-      
     } catch (error) {
       console.error('Error al obtener las películas favoritas:', error);
     }
@@ -122,21 +115,21 @@ const Profile = () => {
               <Text className="text-white text-lg font-semibold">0</Text>
               <Text className="text-light-300 text-xl">Vistas</Text>
             </View>
-            <View className="items-center">
+            <TouchableOpacity className="items-center" onPress={() => router.push('/saved')}>
               <Text className="text-white text-lg font-semibold">{savedCount}</Text>
               <Text className="text-light-300 text-xl">Guardadas</Text>
-            </View>
-            <View className="items-center">
+            </TouchableOpacity>
+            <TouchableOpacity className="items-center" onPress={() => router.push('/favorites')}>
               <Text className="text-white text-lg font-semibold">{favoriteCount}</Text>
               <Text className="text-light-300 text-xl">Favoritas</Text>
-            </View>
+            </TouchableOpacity>
           </View>
   
           <TouchableOpacity
-            className="bg-red-500 px-6 py-3 rounded-2xl"
+            className="bg-red-500 px-6 py-3 rounded-2xl mt-[80%]"
             onPress={logout}
           >
-            <Text className="text-white font-bold text-sm">Cerrar sesión</Text>
+            <Text className="text-white font-bold text-sm ">Cerrar sesión</Text>
           </TouchableOpacity>
         </View>
       ) : (
