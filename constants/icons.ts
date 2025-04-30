@@ -8,7 +8,10 @@ import play from "@/assets/icons/play.png";
 import arrow from "@/assets/icons/arrow.png";
 import saved from "@/assets/icons/saved.png";
 import save1 from "@/assets/icons/save1.png";
-
+import eye from "@/assets/icons/eye.png";
+import eye1 from "@/assets/icons/eye1.png";
+import eye2 from "@/assets/icons/eye2.png";
+import fav from "@/assets/icons/fav.png";
 
 export const icons = {
   home,
@@ -21,5 +24,8 @@ export const icons = {
   arrow,
   saved,
   save1,
-
+  eye,
+  eye1,
+  eye2,
+  fav,
 };

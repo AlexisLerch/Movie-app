@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, Text, Alert } from 'react-native';
 import { useRouter } from 'expo-router'; // Asegúrate de usar este hook
 import { login } from '@/services/appwrite'; // Asegúrate de que la ruta sea correcta
+import { images } from '@/constants/images';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -25,6 +26,7 @@ const Login = () => {
 
   return (
     <View className='p-5 bg-black flex-1 justify-center items-center w-full'>
+
       <Text className='text-white text-2xl mb-5'>Iniciar sesión</Text>
       <Text className='text-white'>Email</Text>
       <TextInput

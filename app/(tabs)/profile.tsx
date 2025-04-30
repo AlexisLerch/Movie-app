@@ -4,6 +4,7 @@ import { Account, Client, ID, Query } from 'react-native-appwrite';
 import { icons } from '@/constants/icons';
 import { router, useFocusEffect } from 'expo-router';
 import { database, getFavorites, account } from '@/services/appwrite';
+import { images } from '@/constants/images';
 
 
 const Profile = () => {
@@ -104,7 +105,8 @@ const Profile = () => {
   );
 
   return (
-    <View className="flex-1 bg-primary px-6 py-10">
+    <View className="flex-1 bg-primary py-10">
+      <Image source={images.pattern} className="absolute w-full  z-0" />
       {user ? (
         <View className="items-center">
           <Image
@@ -118,7 +120,7 @@ const Profile = () => {
           </Text>
           <Text className="text-light-300 text-sm mb-4">{user.email}</Text>
 
-          <View className='flex-row justify-between'>
+          <View className='flex-row justify-between m-5'>
           {favorites.slice(0, 4).map((movie) => (
             <View className='w-1/4 m-1' key={movie.$id}>
               <Image
@@ -135,23 +137,23 @@ const Profile = () => {
           <View className="flex-row justify-between w-full px-8 mt-8 mb-4">
             <TouchableOpacity className="items-center" onPress={() => router.push('/watched')}>
               <Text className="text-white text-lg font-semibold">{watchedCount}</Text>
-              <Text className="text-light-300 text-xl">Vistas</Text>
+              <Text className="color-white text-xl">Vistas</Text>
             </TouchableOpacity>
             <TouchableOpacity className="items-center" onPress={() => router.push('/saved')}>
               <Text className="text-white text-lg font-semibold">{savedCount}</Text>
-              <Text className="text-light-300 text-xl">Guardadas</Text>
+              <Text className="color-white text-xl">Guardadas</Text>
             </TouchableOpacity>
             <TouchableOpacity className="items-center" onPress={() => router.push('/favorites')}>
               <Text className="text-white text-lg font-semibold">{favoriteCount}</Text>
-              <Text className="text-light-300 text-xl">Favoritas</Text>
+              <Text className="color-white text-xl">Favoritas</Text>
             </TouchableOpacity>
           </View>
   
           <TouchableOpacity
-            className="bg-red-500 px-6 py-3 rounded-2xl mt-[80%]"
+            className="bg-white px-6 py-3 rounded-2xl mt-20"
             onPress={logout}
           >
-            <Text className="text-white font-bold text-sm ">Cerrar sesión</Text>
+            <Text className="text-black font-bold text-sm ">Cerrar sesión</Text>
           </TouchableOpacity>
         </View>
       ) : (

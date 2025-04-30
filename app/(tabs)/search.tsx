@@ -37,7 +37,7 @@ const search = () => {
 
   return (
     <View className='flex-1 bg-primary'>
-      <Image source={images.bg} className='flex-1 absolute w-full z-0' resizeMode='cover' />
+      <Image source={images.pattern} className='flex-1 absolute w-full  z-0' resizeMode='cover' />
 
       <FlatList 
         data={movies}
@@ -53,7 +53,7 @@ const search = () => {
         ListHeaderComponent={
           <>
             <View className='w-full flex-row justify-center mt-20 items-center'>
-              <Image source={icons.logo} className='w-12 h-10'/>
+            <Image source={images.logo} className="w-35 h-35 mb-5 mx-auto"/>
             </View>
 
             <View className='my-5'>

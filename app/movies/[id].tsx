@@ -225,21 +225,21 @@ const MovieDetails = () => {
           <TouchableOpacity className='absolute top-5 left-[90%]' onPress={handleToggleSave} >
             <Image 
               source={ isSaved ? icons.saved : icons.save1} 
-              className='absolute size-10 bg-black rounded-full'
+              className='absolute size-6 bg-black rounded-full'
             /> 
           </TouchableOpacity>
 
-          <TouchableOpacity className='absolute top-5 left-[80%]' onPress={handleToggleFavorite}>
+          <TouchableOpacity className='absolute top-5 left-[82%]' onPress={handleToggleFavorite}>
             <Image 
-              source={isFavorite ? icons.star : icons.star} 
-              className='size-10' 
+              source={isFavorite ? icons.star : icons.fav} 
+              className={isFavorite ? 'size-6.5' : 'size-6' }
             />
           </TouchableOpacity>
 
-          <TouchableOpacity className='absolute top-5 left-[70%]' onPress={handleToggleWatched}>
+          <TouchableOpacity className='absolute top-5 left-[73%]' onPress={handleToggleWatched}>
             <Image 
-              source={isWatched ? icons.arrow : icons.arrow} // Usá dos íconos distintos si querés un cambio visual
-              className='size-10 bg-white rounded-full' 
+              source={isWatched ? icons.eye2 : icons.eye1}
+              className='size-7 rounded-full' 
             />
           </TouchableOpacity>
 
@@ -254,9 +254,9 @@ const MovieDetails = () => {
         </View>
       </ScrollView>
 
-      <TouchableOpacity className='absolute bottom-5 left-0 right-0 mx-5 bg-accent rounded-lg py-3.5 flex flex-row items-center justify-center z-50' onPress={router.back}>
-        <Image source={icons.arrow} className='size-5 mr-1 mt-0.5 rotate-180' tintColor="#fff" />
-        <Text className='text-white font-semibold text-base'>Go back</Text>
+      <TouchableOpacity className='absolute bottom-5 left-0 right-0 mx-5 bg-white rounded-lg py-3.5 flex flex-row items-center justify-center z-50' onPress={router.back}>
+        <Image source={icons.arrow} className='size-5 mr-1 mt-0.5 rotate-180' tintColor="#000000" />
+        <Text className='text-black font-semibold text-base'>Go back</Text>
       </TouchableOpacity>
     </View>
   )

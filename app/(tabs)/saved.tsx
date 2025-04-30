@@ -7,6 +7,7 @@ import { icons } from '@/constants/icons';
 import { fetchMovieDetails, fetchMovies } from '@/services/api';
 import useFetch from '@/services/useFetch';
 import { Query } from 'react-native-appwrite';
+import { images } from '@/constants/images';
 
 interface MovieInfoProps {
   label: string;
@@ -108,7 +109,8 @@ const Saved = () => {
 
 
   return (
-    <View className='bg-primary flex-1 px-5 pt-5'>
+    <View className='bg-primary flex-1 pt-5'>
+      <Image source={images.pattern} className="absolute w-full  z-0" />
       <Text className='text-white text-2xl text-center font-bold mt-5 mb-5'>Películas guardadas</Text>
 
       <FlatList
@@ -119,7 +121,7 @@ const Saved = () => {
         renderItem={({ item }) => (
           <TouchableOpacity
           onPress={() => router.push(`/movies/${item.movie_id}`)} // 👈 Navega al detalle
-          className="w-[30%] mb-5 mt-1 ml-2 mr-2"
+          className="w-[30%] m-2"
           >
             <Image
               source={{ uri: item.poster_path}}
