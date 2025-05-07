@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { account, database } from '@/services/appwrite';
 import { useRouter } from 'expo-router';
 import { Query } from 'react-native-appwrite';
+import { icons } from '@/constants/icons';
 
 const Watched = () => {
   const [watched, setWatched] = useState<any[]>([]);
@@ -62,6 +63,11 @@ const Watched = () => {
           </TouchableOpacity>
         )}
       />
+      <TouchableOpacity className='absolute bottom-5 left-0 right-0 mx-5 bg-white rounded-lg py-3.5 flex flex-row items-center justify-center z-50' onPress={router.back}>
+              <Image source={icons.arrow} className='size-5 mr-1 mt-0.5 rotate-180' tintColor="#000000" />
+              <Text className='text-black font-semibold text-base'>Go back</Text>
+      </TouchableOpacity>
+      <View className='mt-5 mb-10'></View>
     </View>
   );
 };

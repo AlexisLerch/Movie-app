@@ -4,8 +4,6 @@ import { images } from '@/constants/images'
 import MovieCard from '@/components/MovieCard'
 import useFetch from '@/services/useFetch'
 import { fetchMovies } from '@/services/api'
-import { useRouter } from 'expo-router'
-import { icons } from '@/constants/icons'
 import  SearchBar  from '@/components/SearchBar'
 import { updateSearchCount } from '@/services/appwrite'
 
@@ -17,6 +15,8 @@ const search = () => {
     query: searchQuery
   }), false)
 
+  // controlamos el input de búsqueda y el debounce para evitar hacer demasiadas peticiones a la API
+  // 500ms es el tiempo de espera para hacer la búsqueda
   useEffect(() => {
     const timeoutId = setTimeout(async () => {
     if (searchQuery.trim()) {
@@ -29,6 +29,8 @@ const search = () => {
   return () => clearTimeout(timeoutId);
   }, [searchQuery])
 
+  // para registrar el conteo de búsqueda en Appwrite
+  // usamos la primera pelicula de la lista como referencia
   useEffect(() => {
     if (movies?.length > 0 && movies?.[0]) {
       updateSearchCount(searchQuery, movies[0])

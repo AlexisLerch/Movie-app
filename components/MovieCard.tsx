@@ -1,9 +1,8 @@
-import { View, Text, TouchableOpacity, Image, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, Image } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { Link, useLocalSearchParams } from 'expo-router'
+import { Link } from 'expo-router'
 import { icons } from '@/constants/icons'
-import { account, database, removeMovie, saveMovie } from '@/services/appwrite'
-import { checkSession } from '@/services/auth'
+import { account, database } from '@/services/appwrite'
 import useFetch from '@/services/useFetch'
 import { fetchMovieDetails } from '@/services/api'
 import { Query } from 'react-native-appwrite'
@@ -39,30 +38,30 @@ const MovieCard = ({ id, poster_path, title, vote_average, release_date}: Movie)
     checkIfSaved();
   }, [movie]);
 
-  const handleToggleSave = async () => {
-    try {
-      if (!movie?.poster_path) {
-        Alert.alert('Error', 'No poster disponible');
-        return;
-      }
+  // const handleToggleSave = async () => {
+  //   try {
+  //     if (!movie?.poster_path) {
+  //       Alert.alert('Error', 'No poster disponible');
+  //       return;
+  //     }
   
-      if (isSaved) {
-        await removeMovie(movie.id);
-        setIsSaved(false);
-        // Alert.alert('Película quitada de la Watchlist');
-      } else {
-        await saveMovie({
-          id: movie.id,
-          title: movie.title,
-          poster_path: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
-        });
-        setIsSaved(true);
-        // Alert.alert('Película guardada');
-      }
-    } catch (err: any) {
-      Alert.alert('Error', err.message);
-    }
-  };
+  //     if (isSaved) {
+  //       await removeMovie(movie.id);
+  //       setIsSaved(false);
+  //       // Alert.alert('Película quitada de la Watchlist');
+  //     } else {
+  //       await saveMovie({
+  //         id: movie.id,
+  //         title: movie.title,
+  //         poster_path: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
+  //       });
+  //       setIsSaved(true);
+  //       // Alert.alert('Película guardada');
+  //     }
+  //   } catch (err: any) {
+  //     Alert.alert('Error', err.message);
+  //   }
+  // };
 
     return (
         <View className='w-[30%]'>
@@ -88,10 +87,10 @@ const MovieCard = ({ id, poster_path, title, vote_average, release_date}: Movie)
                   {(vote_average / 2).toFixed(1)} / 5
                 </Text>
               </View>
-              <TouchableOpacity onPress={handleToggleSave} className='mt-2 top-[78%] left-[85%] absolute'>
+              {/* <TouchableOpacity onPress={handleToggleSave} className='mt-2 top-[78%] left-[85%] absolute'> */}
                 {/* <Text className='text-xs text-blue-400'>+ Guardar</Text> */}
-                <Image source={isSaved ? icons.saved : icons.save1} className='absolute size-5 bg-black rounded-full'/> 
-               </TouchableOpacity>
+                {/* <Image source={isSaved ? icons.save : icons.save1} className='absolute bg-black rounded-full'/>  */}
+               {/* </TouchableOpacity> */}
     
               <View className='flex-row items-center justify-between'>
                 <Text className='text-xs text-light-300 font-medium mt-1'>

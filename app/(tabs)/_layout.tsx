@@ -93,7 +93,7 @@ const _layout = () => {
                     <>
                         <TabIcon 
                         focused={focused} 
-                        icon={icons.save} 
+                        icon={icons.saved} 
                         title="Saved"  />
                     </>
                 )

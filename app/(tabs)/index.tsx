@@ -1,4 +1,3 @@
-import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
 import { ActivityIndicator, FlatList, Image, ScrollView, Text, View } from "react-native";
 import  SearchBar  from "@/components/SearchBar";
@@ -16,6 +15,8 @@ export default function Index() {
 
   const router = useRouter();
 
+  // Verificamos si el usuario ya está autenticado
+  // Si no hay usuario, redirigimos a la pantalla de inicio de sesión
   useEffect(() => {
     const checkSession = async () => {
       try {
@@ -33,16 +34,19 @@ export default function Index() {
     data: trendingMovies,
     loading: trendingLoading,
     error: trendingError,
-  } = useFetch(getTrendingMovies)
+  } = useFetch(getTrendingMovies) // Obtiene las películas más populares de Appwrite
 
   const { 
     data: movies, 
     loading: moviesLoading, 
     error: moviesError 
+
+    // Obtiene las películas más recientes de TMDB (API externa)
   } = useFetch(() => fetchMovies({ 
     query: ''
   }))
 
+  // renderizamos la pantalla principal de la aplicación
   return (
     <View className="flex-1 bg-primary ">
       <Image source={images.pattern} className="absolute w-full  z-0" />
@@ -70,8 +74,6 @@ export default function Index() {
               </View>
             )}
             <>
-              
-
               <FlatList 
                 horizontal
                 showsHorizontalScrollIndicator={false}

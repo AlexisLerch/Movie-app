@@ -1,10 +1,9 @@
 import { Client, Databases, Account, ID, Query } from "react-native-appwrite";
 import { checkSession } from "./auth";
-import search from "@/app/(tabs)/search";
 
 const DATABASE_ID = process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!;
 const COLLECTION_ID = process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID!;
-// const FAVORITE_ID = process.env.EXPO_PUBLIC_APPWRITE_FAVORITE_COLLECTION_ID!;
+
 
 const client = new Client()
   .setEndpoint(process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1')
@@ -12,8 +11,6 @@ const client = new Client()
 
 const database = new Databases(client);
 const account = new Account(client);
-
-
 
 export { account, database, ID };
 
@@ -48,9 +45,7 @@ export const updateSearchCount = async (query: string, movie: Movie) => {
   }
 };
 
-export const getTrendingMovies = async (): Promise<
-  TrendingMovie[] | undefined
-> => {
+export const getTrendingMovies = async (): Promise<TrendingMovie[] | undefined> => {
   try {
     const result = await database.listDocuments(DATABASE_ID, COLLECTION_ID, [
       Query.limit(10),
@@ -63,6 +58,7 @@ export const getTrendingMovies = async (): Promise<
     return undefined;
   }
 };
+
 export const saveMovie = async (movie: {
   id: number | string,
   title: string,
@@ -176,37 +172,6 @@ export const getSavedMoviesCount = async (userId: string) => {
   }
 };
 
-// export const saveFavorite = async (movie: { id: number; title: string; poster_path: string; }) => {
-//   const user = await account.get();
-  
-//   await database.createDocument(
-//     process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
-//     process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID!,
-//     ID.unique(),
-//     {
-//       movie_id: movie.id,
-//       title: movie.title,
-//       poster_path: movie.poster_path,
-//       searchTerm: movie.title.toLowerCase(),
-//       user_id: user.$id,
-//       isFavorite: true
-//     }
-//   );
-// };
-
-// export const getFavoriteMovies = async () => {
-//   const user = await account.get();
-//   const res = await database.listDocuments(
-//     process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
-//     process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID!,
-//     [
-//       Query.equal('user_id', user.$id),
-//       Query.equal('isFavorite', true),
-//       Query.equal('searchTerm', user.$id), // Asegúrate de que este sea el campo correcto para marcar favoritas
-//     ]
-//   );
-//   return res.documents;
-// };
 
 export const saveFavorite = async (movie: {
   id: number;

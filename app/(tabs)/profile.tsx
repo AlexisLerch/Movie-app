@@ -1,9 +1,9 @@
 import { View, Text, Image, TouchableOpacity, Alert } from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Account, Client, ID, Query } from 'react-native-appwrite';
+import { Query } from 'react-native-appwrite';
 import { icons } from '@/constants/icons';
 import { router, useFocusEffect } from 'expo-router';
-import { database, getFavorites, account } from '@/services/appwrite';
+import { database, account } from '@/services/appwrite';
 import { images } from '@/constants/images';
 
 
@@ -23,13 +23,15 @@ const Profile = () => {
       const res = await database.listDocuments(
         process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
         process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID!,
-        [Query.equal('user_id', currentUser.$id)] // Filtramos por el user_id
+        // Filtramos por el user_id
+        [Query.equal('user_id', currentUser.$id)]
       );
   
-      // console.log("Películas guardadas:", res.documents);  // Verifica si las películas se obtienen
-      setSavedCount(res.documents.length); // Establecer el número de películas guardadas
+      // Guardar el conteo de películas guardadas
+      setSavedCount(res.documents.length);
 
     } catch (error: any) {
+      // Manejo de errores: si no se puede obtener el usuario o las películas guardadas, redirigir a la pantalla de inicio de sesión
       console.error('Error al obtener usuario o películas guardadas:', error.message);
       Alert.alert('Sesión caducada', 'Por favor inicia sesión nuevamente.');
       router.replace('/login');
@@ -40,20 +42,22 @@ const Profile = () => {
   const logout = async () => {
     try {
       await account.deleteSession('current');
-      router.replace('/login'); // o ruta que uses para login
+      router.replace('/login');
     } catch (error) {
-      // Alert.alert('Error al cerrar sesión', error.message);
+      Alert.alert('Error al cerrar sesión');
     }
   };
 
   useEffect(() => {
+    // Verificamos si el usuario ya está autenticado
+    // Si no hay usuario, llamamos a la función fetchUser para obtener los datos del usuario
     if (!user) {
       fetchUser();
     }
-  }, [user]);
+  }, [user]); 
 
   
-
+  // Función para obtener las películas favoritas del usuario
   const fetchFavoriteMovies = async () => {
     try {
       const user = await account.get();
@@ -73,6 +77,7 @@ const Profile = () => {
 
   useEffect(() => {
     if (user) {
+      // Si el usuario está autenticado, llamamos a la función para obtener las películas favoritas
       fetchFavoriteMovies();
     }
   }, [user]);
@@ -82,28 +87,30 @@ const Profile = () => {
       fetchUser(); // Vuelve a cargar los datos al enfocar el perfil
     }, [])
   );
+
+  // Función para obtener el conteo de películas vistas
   useFocusEffect(
     useCallback(() => {
       const fetchWatchedCount = async () => {
         try {
           const user = await account.get();
-    
           const res = await database.listDocuments(
             process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!,
             process.env.EXPO_PUBLIC_APPWRITE_WATCHED_COLLECTION_ID!,
             [Query.equal("user_id", user.$id)]
           );
-    
+          // Guardamos el conteo de películas vistas
           setWatchedCount(res.documents.length);
         } catch (error) {
           console.error("Error al cargar películas vistas:", error);
         }
       };
-    
+  
       fetchWatchedCount();
     }, [])
   );
 
+  // renderizado de el perfil del usuario
   return (
     <View className="flex-1 bg-primary py-10">
       <Image source={images.pattern} className="absolute w-full  z-0" />
@@ -118,7 +125,7 @@ const Profile = () => {
           <Text className="text-white text-2xl font-bold mb-1">
             {user.name || 'Usuario'}
           </Text>
-          <Text className="text-light-300 text-sm mb-4">{user.email}</Text>
+          <Text className="text-white text-sm mb-4">{user.email}</Text>
 
           <View className='flex-row justify-between m-5'>
           {favorites.slice(0, 4).map((movie) => (

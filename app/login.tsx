@@ -1,25 +1,21 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, Alert } from 'react-native';
-import { useRouter } from 'expo-router'; // Asegúrate de usar este hook
-import { login } from '@/services/appwrite'; // Asegúrate de que la ruta sea correcta
-import { images } from '@/constants/images';
+import { useRouter } from 'expo-router'; 
+import { login } from '@/services/appwrite';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const router = useRouter(); // Aquí inicializamos el router
+  const router = useRouter(); 
 
   const handleLogin = async () => {
     try {
-      
-      // Intentamos hacer el login
       await login(email, password);
       Alert.alert('Login exitoso');
 
-      // Redirigimos a la página de inicio (o a cualquier otra página de tu elección)
-      router.replace('/'); // Esto reemplaza la pantalla actual por la pantalla inicial
+      // Redirigimos a la página de inicio
+      router.replace('/');
     } catch (err: any) {
-    
       Alert.alert('Error al iniciar sesión', err.message);
     }
   };

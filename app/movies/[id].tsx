@@ -6,8 +6,6 @@ import { fetchMovieDetails } from '@/services/api'
 import { icons } from '@/constants/icons'
 import { account, database, removeMovie, saveMovie } from '@/services/appwrite'
 import { ID, Query } from 'react-native-appwrite'
-import { markAsWatched } from '@/services/appwrite';
-
 
 interface MovieInfoProps {
   label: string;
@@ -26,14 +24,11 @@ const MovieInfo = ({ label, value }: MovieInfoProps) => (
 )
 
 const MovieDetails = () => {
-  const { id } = useLocalSearchParams()
+  const { id } = useLocalSearchParams() // Nos da el id de la película
 
   const {data: movie, loading} = useFetch(() => fetchMovieDetails(id as string))
-
   const [isSaved, setIsSaved] = useState(false);
-
   const [isFavorite, setIsFavorite] = useState(false);
-
   const [isWatched, setIsWatched] = useState(false);
 
   useEffect(() => {
@@ -224,14 +219,14 @@ const MovieDetails = () => {
 
           <TouchableOpacity className='absolute top-5 left-[90%]' onPress={handleToggleSave} >
             <Image 
-              source={ isSaved ? icons.saved : icons.save1} 
+              source={ isSaved ? icons.save : icons.save1} 
               className='absolute size-6 bg-black rounded-full'
             /> 
           </TouchableOpacity>
 
           <TouchableOpacity className='absolute top-5 left-[82%]' onPress={handleToggleFavorite}>
             <Image 
-              source={isFavorite ? icons.star : icons.fav} 
+              source={isFavorite ? icons.star1 : icons.fav} 
               className={isFavorite ? 'size-6.5' : 'size-6' }
             />
           </TouchableOpacity>

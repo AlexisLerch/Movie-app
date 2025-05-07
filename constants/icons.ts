@@ -12,6 +12,7 @@ import eye from "@/assets/icons/eye.png";
 import eye1 from "@/assets/icons/eye1.png";
 import eye2 from "@/assets/icons/eye2.png";
 import fav from "@/assets/icons/fav.png";
+import star1 from "@/assets/icons/star1.png";
 
 export const icons = {
   home,
@@ -28,4 +29,5 @@ export const icons = {
   eye1,
   eye2,
   fav,
+  star1,
 };
